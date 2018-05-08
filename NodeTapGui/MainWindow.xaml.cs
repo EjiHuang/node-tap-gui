@@ -72,7 +72,7 @@ namespace NodeTapGui
         #region properties
 
         /// <summary>
-        ///     尾标 
+        ///     尾标
         /// </summary>
         public string CmdTag = Environment.NewLine + @"$  ";
 
