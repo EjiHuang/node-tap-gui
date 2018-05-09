@@ -1,6 +1,6 @@
 # node-tap-gui
 Srar的node-tap的Gui版本<br/>
-<img width="150" height="250" src="https://github.com/JerryAJ/node-tap-gui/blob/master/Screenshots/Screenshot01.png"/>
+<img width="320" height="360" src="https://github.com/JerryAJ/node-tap-gui/blob/master/Screenshots/Screenshot01.png"/>
 # 使用
 首先您需要下载Srar的node-tap，按照要求完成环境的搭建并且运行测试成功  
 如果您还没有Srar的node-tap，请跳转到这里：https://github.com/Srar/node-tap
