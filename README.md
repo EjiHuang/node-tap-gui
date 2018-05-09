@@ -2,15 +2,18 @@
 Srar的node-tap的Gui版本
 
 # 使用
-首先您需要下载Srar的node-tap，按照要求完成环境的搭建并且运行测试成功
+首先您需要下载Srar的node-tap，按照要求完成环境的搭建并且运行测试成功  
 如果您还没有Srar的node-tap，请跳转到这里：https://github.com/Srar/node-tap
 
-然后将node-tap-gui程序集合（包括里面的*.dll和*.Config）放到您node-tap文件夹下
+然后将node-tap-gui程序集合（包括里面的*.dll和*.Config）放到您node-tap文件夹下  
 最后您就可以使用本软件了
 
 # 注意
-填写软件的相关信息将会保存在*.Config文件中，下次启动时将无需再重新填写
+填写程序的相关信息将会保存在*.Config文件中，下次启动时将无需再重新填写
+
+# 如何构建
+本程序为WPF应用程序，在Visual Studio 2017下构建完成，需要.net 4.5以上支持  
 
 # 感谢
-Srar的node-tap（ https://github.com/Srar/node-tap ）
+Srar的node-tap（ https://github.com/Srar/node-tap ）  
 Imagin.NET的UI框架（ https://github.com/imagin-tech/Imagin.NET ）
