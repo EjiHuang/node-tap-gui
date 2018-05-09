@@ -1,4 +1,4 @@
-﻿using Command;
+using Command;
 using Imagin.Common;
 using NotifyProperty;
 using System;
@@ -265,17 +265,18 @@ namespace NodeTapGui
 		[DllImport("wininet.dll")]
 		private extern static bool InternetGetConnectedState(int Description, int ReservedValue);
 
-
-		#endregion
-		/// <summary>
+        /// <summary>
 		///		只能输入数字
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void TB_XtudpTimes_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
-		{
-			Regex regex = new Regex("[^0-9.-]+");
-			e.Handled = regex.IsMatch(e.Text);
-		}
-	}
+        {
+            Regex regex = new Regex("[^0-9.-]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        #endregion
+
+    }
 }
