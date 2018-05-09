@@ -11,6 +11,9 @@ Srar的node-tap的Gui版本
 # 注意
 填写程序的相关信息将会保存在*.Config文件中，下次启动时将无需再重新填写
 
+# 二进制文件下载
+请到Releases频道获取最新版本（ https://github.com/JerryAJ/node-tap-gui/releases ）
+
 # 如何构建
 本程序为WPF应用程序，在Visual Studio 2017下构建完成，需要.net 4.5以上支持  
 
