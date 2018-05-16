@@ -1,5 +1,4 @@
 using Command;
-using Imagin.Common;
 using NotifyProperty;
 using System;
 using System.Collections.Generic;
@@ -15,7 +14,7 @@ namespace NodeTapGui
 	/// <summary>
 	/// MainWindow.xaml 的交互逻辑
 	/// </summary>
-	public partial class MainWindow : BasicWindow
+	public partial class MainWindow
     {
         #region constructor
 
