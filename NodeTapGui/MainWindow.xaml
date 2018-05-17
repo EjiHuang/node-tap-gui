@@ -36,7 +36,7 @@
                     <Image
                         Width="18"
                         Height="18"
-                        Source="Images/thunder.png" />
+                        Source="Images/Logo.ico" />
                 </controls:CaptionIcon>
                 <TextBlock
                     Grid.Row="0"
@@ -233,11 +233,11 @@
                     IsChecked="{Binding IsUdpProtocol.Value}"
                     IsEnabled="{Binding IsSeparateMode.Value}" />
                 <!--  start btn  -->
-                <controls:CaptionButton
+                <Button
                     x:Name="Btn_Start"
                     Grid.Column="3"
                     Width="80"
-                    Background="White"
+                    Margin="0,4"
                     Content="Start"
                     FontWeight="DemiBold"
                     Foreground="Black" />

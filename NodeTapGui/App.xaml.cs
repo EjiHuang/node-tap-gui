@@ -1,8 +1,10 @@
-﻿using System;
+﻿using NodeTapGui.WinFormComponent;
+using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Security.Principal;
 using System.Windows;
+using System.Windows.Navigation;
 
 namespace NodeTapGui
 {
@@ -11,14 +13,56 @@ namespace NodeTapGui
     /// </summary>
     public partial class App : Application
     {
+        #region properties
+
+        /// <summary>
+        ///     状态栏图标对象
+        /// </summary>
+        private NotifyIconComponent _notifyIcon;
+
+        #endregion
+
         #region override method
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            base.OnStartup(e);
-
+            // 检查是否为管理员权限运行
             CheckAdministrator();
-            StartupUri = new Uri("MainWindow.xaml", UriKind.RelativeOrAbsolute);
+
+            // 构造主窗口并显示
+            MainWindow = new MainWindow();
+            MainWindow.Show();
+
+            // 配置NotifyIcon
+            _notifyIcon = new NotifyIconComponent();
+            MainWindow.StateChanged +=
+                (s, args) =>
+                {
+                    var win = s as MainWindow;
+                    if (win.WindowState == WindowState.Minimized)
+                    {
+                        win.ShowInTaskbar = false;
+                        _notifyIcon.ShowBalloonTip("NodeTapGui has been minimized!");
+                    }
+                };
+            _notifyIcon.OnShowWindowHandler +=
+                (s, args) =>
+                {
+                    // 还原显示窗口
+                    if (MainWindow.WindowState == WindowState.Minimized)
+                    {
+                        MainWindow.WindowState = WindowState.Normal;
+                        MainWindow.ShowInTaskbar = true;
+                    }
+                };
+        }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            base.OnExit(e);
+
+            // 释放资源
+            _notifyIcon.Dispose();
         }
 
         #endregion
