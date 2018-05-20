@@ -58,12 +58,13 @@
         <!--  main content  -->
         <Grid Grid.Row="1" Margin="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="35" />
-                <RowDefinition Height="35" />
-                <RowDefinition Height="35" />
-                <RowDefinition Height="35" />
-                <RowDefinition Height="35" />
-                <RowDefinition Height="35" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="30" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -79,14 +80,14 @@
                 HorizontalAlignment="Right"
                 VerticalAlignment="Center"
                 Content="Host"
-                FontSize="20"
+                FontSize="16"
                 FontWeight="Bold" />
             <controls:PromptTextBox
                 Grid.Row="0"
                 Grid.Column="1"
-                Margin="0,0,10,0"
+                Margin="0,0,10,1"
                 VerticalAlignment="Center"
-                FontSize="18"
+                FontSize="16"
                 Prompt="please input host"
                 Text="{Binding Host.Value}" />
             <!--  port  -->
@@ -98,14 +99,14 @@
                 HorizontalAlignment="Right"
                 VerticalAlignment="Center"
                 Content="Port"
-                FontSize="20"
+                FontSize="16"
                 FontWeight="Bold" />
             <controls:PromptTextBox
                 Grid.Row="1"
                 Grid.Column="1"
-                Margin="0,0,10,0"
+                Margin="0,0,10,1"
                 VerticalAlignment="Center"
-                FontSize="18"
+                FontSize="16"
                 Prompt="please input port"
                 Text="{Binding Port.Value}" />
             <!--  password  -->
@@ -117,16 +118,16 @@
                 HorizontalAlignment="Right"
                 VerticalAlignment="Center"
                 Content="Passwd"
-                FontSize="20"
+                FontSize="16"
                 FontWeight="Bold" />
             <PasswordBox
                 Grid.Row="2"
                 Grid.Column="1"
-                Margin="0,0,10,0"
+                Margin="0,1,10,1"
                 VerticalAlignment="Center"
                 Command:PasswordBoxBindingHelper.BindedPassword="{Binding Path=Password.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 Command:PasswordBoxBindingHelper.IsPasswordBindingEnabled="True"
-                FontSize="18"
+                FontSize="16"
                 PasswordChanged="PasswordBox_PasswordChanged" />
             <!--  method  -->
             <Label
@@ -137,7 +138,7 @@
                 HorizontalAlignment="Right"
                 VerticalAlignment="Center"
                 Content="Method"
-                FontSize="20"
+                FontSize="16"
                 FontWeight="Bold" />
             <ComboBox
                 Grid.Row="3"
@@ -156,7 +157,7 @@
                 HorizontalAlignment="Right"
                 VerticalAlignment="Center"
                 Content="Xtudp"
-                FontSize="20"
+                FontSize="16"
                 FontWeight="Bold" />
             <StackPanel
                 Grid.Row="4"
@@ -182,7 +183,7 @@
                     Width="50"
                     Margin="0,0,10,0"
                     VerticalAlignment="Center"
-                    FontSize="18"
+                    FontSize="16"
                     IsEnabled="{Binding IsXtudp.Value}"
                     PreviewTextInput="TB_XtudpTimes_PreviewTextInput"
                     Text="{Binding XtudpTimes.Value}" />
@@ -216,7 +217,7 @@
                     VerticalAlignment="Center"
                     VerticalContentAlignment="Center"
                     Content="Tcp"
-                    FontSize="18"
+                    FontSize="16"
                     FontWeight="Bold"
                     GroupName="Protocol"
                     IsChecked="True"
@@ -227,17 +228,33 @@
                     VerticalAlignment="Center"
                     VerticalContentAlignment="Center"
                     Content="Udp"
-                    FontSize="18"
+                    FontSize="16"
                     FontWeight="Bold"
                     GroupName="Protocol"
                     IsChecked="{Binding IsUdpProtocol.Value}"
                     IsEnabled="{Binding IsSeparateMode.Value}" />
-                <!--  start btn  -->
+                <!--  qrcode import  -->
                 <Button
-                    x:Name="Btn_Start"
+                    x:Name="Btn_QRCodeImport"
                     Grid.Column="3"
                     Width="80"
                     Margin="0,4"
+                    HorizontalAlignment="Right"
+                    FontWeight="DemiBold"
+                    Foreground="Black">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="Images/QRCode.png" />
+                        <TextBlock VerticalAlignment="Center" Text=" Scan" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+            <Grid Grid.Row="6" Grid.ColumnSpan="2">
+                <!--  start btn  -->
+                <Button
+                    x:Name="Btn_Start"
+                    Width="80"
+                    Margin="10,4"
+                    HorizontalAlignment="Right"
                     Content="Start"
                     FontWeight="DemiBold"
                     Foreground="Black" />
@@ -245,7 +262,7 @@
             <!--  console view  -->
             <TextBox
                 x:Name="ConsoleView"
-                Grid.Row="6"
+                Grid.Row="7"
                 Grid.ColumnSpan="2"
                 Margin="0,5"
                 Background="Black"
