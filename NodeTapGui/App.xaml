@@ -11,6 +11,8 @@
                 <!--<ResourceDictionary Source="pack://application:,,,/MetroRadiance;component/Themes/Dark.xaml" />-->
                 <ResourceDictionary Source="pack://application:,,,/MetroRadiance;component/Themes/Light.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MetroRadiance;component/Themes/Accents/Blue.xaml" />
+                <!--  My styles  -->
+                <ResourceDictionary Source="pack://application:,,,/NodeTapGui;component/Styles/Generic.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

@@ -133,6 +133,8 @@
     <Compile Include="Controls\QRCodeRect.xaml.cs">
       <DependentUpon>QRCodeRect.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\HostDelayColorTextConv.cs" />
+    <Compile Include="Framwork\Command\CommonFunc.cs" />
     <Compile Include="WinFormComponent\NotifyIconComponent.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -140,6 +142,10 @@
       <DependentUpon>NotifyIconComponent.cs</DependentUpon>
     </Compile>
     <Page Include="Controls\QRCodeRect.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\Generic.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -202,9 +208,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Styles\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="Images\Logo.ico" />
   </ItemGroup>

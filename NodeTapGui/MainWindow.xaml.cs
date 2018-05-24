@@ -1,22 +1,27 @@
 using Command;
+using NodeTapGui.Controls;
 using NotifyProperty;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Drawing;
+using System.Linq;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Configuration;
 using System.Windows.Forms;
-using System.Drawing;
+using System.Windows.Threading;
 using ZXing;
-using ZXing.QrCode;
 using ZXing.Common;
-using System.Linq;
+using ZXing.QrCode;
 using MessageBox = System.Windows.MessageBox;
-using System.Text;
-using NodeTapGui.Controls;
 
 namespace NodeTapGui
 {
@@ -147,136 +152,150 @@ namespace NodeTapGui
         /// </summary>
         public NotifyPropertyEx<bool> IsSeparateMode { get; } = false;
 
+        /// <summary>
+        ///     网络延迟
+        /// </summary>
+        public NotifyPropertyEx<string> HostDelays { get; } = string.Empty;
+
         #endregion
 
-        #region method
+        #region method & event
+
+        #region control event
 
         /// <summary>
-        ///     事件集合
+        ///     事件：窗口加载完成事件
         /// </summary>
-        private void HandleEvents()
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            /*
-				窗口加载完成事件
-			 */
-            Loaded += (s, e) =>
-            {
-                if (!IsConnectInternet())
-                    MessageBox.Show("网络电波貌似无法到达，请检查当前计算机网络是否连通。", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                ConsoleView.ScrollToEnd();
-                ConsoleText.Value += "ʕ •ᴥ•ʔ Welcome to use node sstap.";
+            if (!IsConnectInternet())
+                MessageBox.Show("网络电波貌似无法到达，请检查当前计算机网络是否连通。", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+            ConsoleView.ScrollToEnd();
+            ConsoleText.Value += "ʕ •ᴥ•ʔ Welcome to use node sstap.";
 
-                Cmd = new CmdHelper(this);
-            };
+            Cmd = new CmdHelper(this);
 
-            /*
-				窗口关闭事件
-			 */
-            Closed += (s, e) =>
-            {
-                // 保存信息到程序配置中
-                Configuration cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-                cfa.AppSettings.Settings["Host"].Value = Host.Value;
-                cfa.AppSettings.Settings["Port"].Value = Port.Value;
-                cfa.AppSettings.Settings["Password"].Value = Password.Value;
-                cfa.AppSettings.Settings["Method"].Value = Method.Value;
-                cfa.Save();
-                // 关闭SSTAP进程
-                Cmd.CloseProc();
-            };
+            // 启动获取网络延迟定时器
+            GetHostDelays();
+        }
 
-            /*
-				文本框编辑事件，使文本框一直保持文本最后
-			 */
-            ConsoleView.TextChanged += (s, e) =>
-            {
-                ConsoleView.SelectionStart = ConsoleView.Text.Length;
-                ConsoleView.ScrollToEnd();
-            };
+        /// <summary>
+        ///     事件：窗口关闭事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MainWindow_Closed(object sender, EventArgs e)
+        {
+            // 保存信息到程序配置中
+            Configuration cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            cfa.AppSettings.Settings["Host"].Value = Host.Value;
+            cfa.AppSettings.Settings["Port"].Value = Port.Value;
+            cfa.AppSettings.Settings["Password"].Value = Password.Value;
+            cfa.AppSettings.Settings["Method"].Value = Method.Value;
+            cfa.Save();
+            // 关闭SSTAP进程
+            Cmd.CloseProc();
+        }
 
-            /*
-                扫描屏幕上的二维码并且绘制矩形标志
-             */
-            Btn_QRCodeImport.Click += (s, e) =>
+        /// <summary>
+        ///     事件：启动按钮按钮单击事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void Btn_Start_ClickAsync(object sender, RoutedEventArgs e)
+        {
+            // 构造命令
+            CmdString = CMD_NODE_TAP_EXE;
+            // 添加Host
+            CmdString += string.IsNullOrWhiteSpace(Host.Value) ? "" : string.Format("{0}{1} ", CMD_HOST, Host.Value);
+            // 添加端口
+            CmdString += string.IsNullOrWhiteSpace(Port.Value) ? "" : string.Format("{0}{1} ", CMD_PORT, Port.Value);
+            // 添加密码
+            CmdString += string.IsNullOrWhiteSpace(Password.Value) ? "" : string.Format("{0}{1} ", CMD_PASSWD, Password.Value);
+            // 判断udp多倍发包倍率(适用于游戏)
+            if (IsXtudp)
             {
-                var data = DecodeQRCodeAndDrawRect();
-                if (string.IsNullOrWhiteSpace(data))
-                    MessageBox.Show("二维码识别错误，请检查当前屏幕下是否存在清晰的二维码？", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                else
+                // Xtudp Times
+                CmdString += string.IsNullOrWhiteSpace(XtudpTimes.Value) ? "" : string.Format("{0}{1} ", CMD_XTUDP, XtudpTimes.Value);
+            }
+            // 加密
+            CmdString += string.IsNullOrWhiteSpace(Method.Value) ? "" : string.Format("{0}{1} ", CMD_METHOD, Method.Value);
+
+            // 判断通信协议
+            if (IsSeparateMode && !IsUdpProtocol)
+            {
+                // tcp host
+                CmdString += string.IsNullOrWhiteSpace(Host.Value) ? "" : string.Format("{0}{1} ", CMD_TCPHOST, Host.Value);
+                // tcp port
+                CmdString += string.IsNullOrWhiteSpace(Port.Value) ? "" : string.Format("{0}{1} ", CMD_TCPPORT, Port.Value);
+                // tcp passwd
+                CmdString += string.IsNullOrWhiteSpace(Password.Value) ? "" : string.Format("{0}{1} ", CMD_TCPPASSWD, Password.Value);
+                // tcp method
+                CmdString += string.IsNullOrWhiteSpace(Method.Value) ? "" : string.Format("{0}{1} ", CMD_TCPMETHOD, Method.Value);
+            }
+            else if (IsSeparateMode && IsUdpProtocol)
+            {
+                // udp host
+                CmdString += string.IsNullOrWhiteSpace(Host.Value) ? "" : string.Format("{0}{1} ", CMD_UDPHOST, Host.Value);
+                // udp port
+                CmdString += string.IsNullOrWhiteSpace(Port.Value) ? "" : string.Format("{0}{1} ", CMD_UDPPORT, Port.Value);
+                // udp passwd
+                CmdString += string.IsNullOrWhiteSpace(Password.Value) ? "" : string.Format("{0}{1} ", CMD_UDPPASSWD, Password.Value);
+                // udp method
+                CmdString += string.IsNullOrWhiteSpace(Method.Value) ? "" : string.Format("{0}{1} ", CMD_UDPMETHOD, Method.Value);
+            }
+
+
+            ConsoleText.Value += CmdTag + CmdString + Environment.NewLine;
+            await Cmd.ExecuteCommandAsync(CmdString);
+
+            // ʕ •ᴥ•ʔ保持焦点
+            ConsoleView.Focus();
+        }
+
+        /// <summary>
+        ///     事件：文本框编辑事件，使文本框一直保持文本最后
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ConsoleView_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            ConsoleView.SelectionStart = ConsoleView.Text.Length;
+            ConsoleView.ScrollToEnd();
+        }
+
+        /// <summary>
+        ///     事件：扫描屏幕上的二维码并且绘制矩形标志
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Btn_QRCodeImport_Click(object sender, RoutedEventArgs e)
+        {
+            var data = DecodeQRCodeAndDrawRect();
+            if (string.IsNullOrWhiteSpace(data))
+                MessageBox.Show("二维码识别错误，请检查当前屏幕下是否存在清晰的二维码？", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+            else
+            {
+                // 屏蔽掉ss://和等号后面的中文字符
+                if (data.Substring(0, 5) != "ss://")
                 {
-                    // 屏蔽掉ss://和等号后面的中文字符
-                    if(data.Substring(0,5) != "ss://")
-                    {
-                        MessageBox.Show("好像不是ss的二维码吧？请尝试手动输入", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                        return;
-                    }
-                    byte[] buffer = Convert.FromBase64String(data.Substring(5, data.IndexOf('=') + 1 - 5));
-                    string decodedData = Encoding.UTF8.GetString(buffer);
-                    var arrayData = decodedData.Split(':');
-                    // 设置数据
-                    Method.Value = arrayData[0];
-                    Password.Value = arrayData[1].Split('@')[0];
-                    Host.Value = arrayData[1].Split('@')[1];
-                    Port.Value = arrayData[2];
+                    MessageBox.Show("好像不是ss的二维码吧？请尝试手动输入", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                byte[] buffer = Convert.FromBase64String(data.Substring(5, data.IndexOf('=') + 1 - 5));
+                string decodedData = Encoding.UTF8.GetString(buffer);
+                var arrayData = decodedData.Split(':');
+                // 设置数据
+                Method.Value = arrayData[0];
+                Password.Value = arrayData[1].Split('@')[0];
+                Host.Value = arrayData[1].Split('@')[1];
+                Port.Value = arrayData[2];
 #if DEBUG
-                    Console.WriteLine(decodedData);
+                Console.WriteLine(decodedData);
 #endif
-                }
-            };
-
-            /*
-				启动按钮按钮单击事件
-			 */
-            Btn_Start.Click += async (s, e) =>
-            {
-                // 构造命令
-                CmdString = CMD_NODE_TAP_EXE;
-                // 添加Host
-                CmdString += string.IsNullOrWhiteSpace(Host.Value) ? "" : string.Format("{0}{1} ", CMD_HOST, Host.Value);
-                // 添加端口
-                CmdString += string.IsNullOrWhiteSpace(Port.Value) ? "" : string.Format("{0}{1} ", CMD_PORT, Port.Value);
-                // 添加密码
-                CmdString += string.IsNullOrWhiteSpace(Password.Value) ? "" : string.Format("{0}{1} ", CMD_PASSWD, Password.Value);
-                // 判断udp多倍发包倍率(适用于游戏)
-                if (IsXtudp)
-                {
-                    // Xtudp Times
-                    CmdString += string.IsNullOrWhiteSpace(XtudpTimes.Value) ? "" : string.Format("{0}{1} ", CMD_XTUDP, XtudpTimes.Value);
-                }
-                // 加密
-                CmdString += string.IsNullOrWhiteSpace(Method.Value) ? "" : string.Format("{0}{1} ", CMD_METHOD, Method.Value);
-
-                // 判断通信协议
-                if (IsSeparateMode && !IsUdpProtocol)
-                {
-                    // tcp host
-                    CmdString += string.IsNullOrWhiteSpace(Host.Value) ? "" : string.Format("{0}{1} ", CMD_TCPHOST, Host.Value);
-                    // tcp port
-                    CmdString += string.IsNullOrWhiteSpace(Port.Value) ? "" : string.Format("{0}{1} ", CMD_TCPPORT, Port.Value);
-                    // tcp passwd
-                    CmdString += string.IsNullOrWhiteSpace(Password.Value) ? "" : string.Format("{0}{1} ", CMD_TCPPASSWD, Password.Value);
-                    // tcp method
-                    CmdString += string.IsNullOrWhiteSpace(Method.Value) ? "" : string.Format("{0}{1} ", CMD_TCPMETHOD, Method.Value);
-                }
-                else if (IsSeparateMode && IsUdpProtocol)
-                {
-                    // udp host
-                    CmdString += string.IsNullOrWhiteSpace(Host.Value) ? "" : string.Format("{0}{1} ", CMD_UDPHOST, Host.Value);
-                    // udp port
-                    CmdString += string.IsNullOrWhiteSpace(Port.Value) ? "" : string.Format("{0}{1} ", CMD_UDPPORT, Port.Value);
-                    // udp passwd
-                    CmdString += string.IsNullOrWhiteSpace(Password.Value) ? "" : string.Format("{0}{1} ", CMD_UDPPASSWD, Password.Value);
-                    // udp method
-                    CmdString += string.IsNullOrWhiteSpace(Method.Value) ? "" : string.Format("{0}{1} ", CMD_UDPMETHOD, Method.Value);
-                }
-
-
-                ConsoleText.Value += CmdTag + CmdString + Environment.NewLine;
-                await Cmd.ExecuteCommandAsync(CmdString);
-
-                // ʕ •ᴥ•ʔ保持焦点
-                ConsoleView.Focus();
-            };
+            }
         }
 
         /// <summary>
@@ -291,27 +310,53 @@ namespace NodeTapGui
             select.Invoke(pwdBox, new object[] { pwdBox.Password.Length + 1, pwdBox.Password.Length + 1 });
         }
 
-        /// <summary>
-        ///     检查当前网络是否连通
-        /// </summary>
-        /// <returns></returns>
-        private static bool IsConnectInternet()
-        {
-            int Description = 0;
-            return InternetGetConnectedState(Description, 0);
-        }
-        [DllImport("wininet.dll")]
-        private extern static bool InternetGetConnectedState(int Description, int ReservedValue);
+
 
         /// <summary>
-		///		只能输入数字
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void TB_XtudpTimes_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        ///		只能输入数字
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TB_XtudpTimes_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
         {
             Regex regex = new Regex("[^0-9.-]+");
             e.Handled = regex.IsMatch(e.Text);
+        }
+
+
+        #endregion
+
+        #region method
+
+        /// <summary>
+        ///     事件集合
+        /// </summary>
+        private void HandleEvents()
+        {
+            /// ##############################################################################
+            ///     事件：窗口加载完成事件
+            /// ##############################################################################
+            Loaded += MainWindow_Loaded;
+
+            /// ##############################################################################
+            ///     事件：窗口关闭事件
+            /// ##############################################################################
+            Closed += MainWindow_Closed;
+
+            /// ##############################################################################
+            ///     事件：文本框编辑事件，使文本框一直保持文本最后
+            /// ##############################################################################
+            ConsoleView.TextChanged += ConsoleView_TextChanged;
+
+            /// ##############################################################################
+            ///     事件：扫描屏幕上的二维码并且绘制矩形标志
+            /// ##############################################################################
+            Btn_QRCodeImport.Click += Btn_QRCodeImport_Click;
+
+            /// ##############################################################################
+            ///     事件：启动按钮按钮单击事件
+            /// ##############################################################################
+            Btn_Start.Click += Btn_Start_ClickAsync;
         }
 
         /// <summary>
@@ -375,7 +420,7 @@ namespace NodeTapGui
                             qrcRect.Height = screen.Bounds.Height;
                             qrcRect.Show();
                         }
-                        
+
                         return result.Text;
                     }
                 }
@@ -384,13 +429,45 @@ namespace NodeTapGui
             return string.Empty;
         }
 
+        /// <summary>
+        ///     获取到Host的网络延迟
+        /// </summary>
+        public void GetHostDelays()
+        {
+            var ping = new Ping();
+            var data = @"FXFXFXFXFXFXFXFXFXFXFXFXFFXFXFXFXFXFXFXFXFXFXFXFXF";
+            ping.PingCompleted += async (sender, args) =>
+            {
+                HostDelays.Value = (args.Reply == null) ? "time out" : args.Reply.RoundtripTime.ToString() + " ms";
+                await Task.Delay(1000);
+                ping.SendAsync(Host.Value, data);
+            };
+
+            ping.SendAsync(Host.Value, data);
+        }
+
+        /// <summary>
+        ///     检查当前网络是否连通
+        /// </summary>
+        /// <returns></returns>
+        private static bool IsConnectInternet()
+        {
+            int Description = 0;
+            return InternetGetConnectedState(Description, 0);
+        }
+        [DllImport("wininet.dll")]
+        private extern static bool InternetGetConnectedState(int Description, int ReservedValue);
+
         #endregion
 
-        #region native method
+        #endregion
+
+        #region native api
 
         [DllImport("user32.dll")]
         public static extern IntPtr GetWindowDC(IntPtr hWnd);
 
         #endregion
+
     }
 }
