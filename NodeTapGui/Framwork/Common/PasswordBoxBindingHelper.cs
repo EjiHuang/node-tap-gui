@@ -6,7 +6,7 @@ using System.Windows.Controls;
 	[WPF]实现密码框的密码绑定 by:周银辉
 	http://www.cnblogs.com/zhouyinhui/archive/2009/08/27/1554943.html
 */
-namespace Command
+namespace Common
 {
 	public static class PasswordBoxBindingHelper
 	{

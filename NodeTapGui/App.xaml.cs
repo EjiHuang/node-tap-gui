@@ -43,6 +43,8 @@ namespace NodeTapGui
                     {
                         win.ShowInTaskbar = false;
                         _notifyIcon.ShowBalloonTip("NodeTapGui has been minimized!");
+                        // 停止Ping
+                        Common.CommonEx.TimerGetHostDelays.Stop();
                     }
                 };
             _notifyIcon.OnShowWindowHandler +=
@@ -53,6 +55,8 @@ namespace NodeTapGui
                     {
                         MainWindow.WindowState = WindowState.Normal;
                         MainWindow.ShowInTaskbar = true;
+                        // 开启Ping
+                        Common.CommonEx.TimerGetHostDelays.Start();
                     }
                 };
         }

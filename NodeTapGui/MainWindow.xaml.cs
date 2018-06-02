@@ -1,4 +1,4 @@
-using Command;
+using Common;
 using NodeTapGui.Controls;
 using NodeTapGui.Framwork.Net;
 using NotifyProperty;
@@ -7,14 +7,11 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Drawing;
 using System.Linq;
-using System.Net;
 using System.Net.NetworkInformation;
-using System.Net.Sockets;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
@@ -166,11 +163,6 @@ namespace NodeTapGui
         /// </summary>
         private PingHelper _ping = new PingHelper();
 
-        /// <summary>
-        ///     显示网络延迟的计时器
-        /// </summary>
-        private DispatcherTimer _timerGetHostDelays = new DispatcherTimer(DispatcherPriority.Background);
-
         #endregion
 
         #region method & event
@@ -192,10 +184,11 @@ namespace NodeTapGui
             Cmd = new CmdHelper(this);
 
             // 启动获取网络延迟定时器
-            _timerGetHostDelays.Interval = TimeSpan.FromSeconds(1);
-            _timerGetHostDelays.Tag = "TIMER_GET_HOST_DELAYS";
-            _timerGetHostDelays.Tick += (s, args) => GetHostDelays();
-            _timerGetHostDelays.Start();
+            CommonEx.TimerGetHostDelays = new DispatcherTimer(DispatcherPriority.Background);
+            CommonEx.TimerGetHostDelays.Interval = TimeSpan.FromSeconds(1);
+            CommonEx.TimerGetHostDelays.Tag = "TIMER_GET_HOST_DELAYS";
+            CommonEx.TimerGetHostDelays.Tick += (s, args) => GetHostDelays();
+            CommonEx.TimerGetHostDelays.Start();
         }
 
         /// <summary>
@@ -301,7 +294,15 @@ namespace NodeTapGui
                     MessageBox.Show("好像不是ss的二维码吧？请尝试手动输入", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
-                byte[] buffer = Convert.FromBase64String(data.Substring(5, data.IndexOf('=') + 1 - 5));
+                byte[] buffer;
+                if (data.IndexOf('#') == -1)
+                {
+                    buffer = Convert.FromBase64String(data.Substring(5));
+                }
+                else
+                {
+                    buffer = Convert.FromBase64String(data.Substring(5, data.IndexOf('#') - 5));
+                }
                 string decodedData = Encoding.UTF8.GetString(buffer);
                 var arrayData = decodedData.Split(':');
                 // 设置数据

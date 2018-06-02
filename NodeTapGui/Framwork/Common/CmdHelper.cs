@@ -4,10 +4,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Command
+namespace Common
 {
 	public class CmdHelper
-    {
+	{
 		public MainWindow Main;
 		Process proc;
 
@@ -21,9 +21,9 @@ namespace Command
 		/// </summary>
 		/// <param name="command"></param>
 		/// <returns></returns>
-        public async Task ExecuteCommandAsync(string command)
-        {
-            await Task.Run(() =>
+		public async Task ExecuteCommandAsync(string command)
+		{
+			await Task.Run(() =>
 			 {
 				 ProcessStartInfo CmdProcessInfo = new ProcessStartInfo()
 				 {
@@ -42,7 +42,7 @@ namespace Command
 				 proc.OutputDataReceived += Proc_OutputDataReceived;
 				 proc.ErrorDataReceived += Proc_ErrorDataReceived;
 			 });
-        }
+		}
 		
 		/// <summary>
 		///		关闭当前关联程序

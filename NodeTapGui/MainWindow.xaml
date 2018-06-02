@@ -1,7 +1,7 @@
 ﻿<controls:MetroWindow x:Class="NodeTapGui.MainWindow"
                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                      xmlns:Command="clr-namespace:Command"
+                      xmlns:Command="clr-namespace:Common"
                       xmlns:controls="http://schemes.grabacr.net/winfx/2014/controls"
                       xmlns:conv="clr-namespace:NodeTapGui.Converters"
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"

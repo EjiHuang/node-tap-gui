@@ -134,7 +134,8 @@
       <DependentUpon>QRCodeRect.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\HostDelayColorTextConv.cs" />
-    <Compile Include="Framwork\Command\CommonFunc.cs" />
+    <Compile Include="Framwork\Common\CommonEx.cs" />
+    <Compile Include="Framwork\Common\CommonFunc.cs" />
     <Compile Include="Framwork\Net\PingHelper.cs" />
     <Compile Include="WinFormComponent\NotifyIconComponent.cs">
       <SubType>Component</SubType>
@@ -158,8 +159,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Framwork\Command\CmdHelper.cs" />
-    <Compile Include="Framwork\Command\PasswordBoxBindingHelper.cs" />
+    <Compile Include="Framwork\Common\CmdHelper.cs" />
+    <Compile Include="Framwork\Common\PasswordBoxBindingHelper.cs" />
     <Compile Include="Framwork\NotifyProperty\NotifyPropertyEx.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
