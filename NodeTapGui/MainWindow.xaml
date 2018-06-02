@@ -94,7 +94,7 @@
                 <TextBlock Canvas.Top="5"
                            Canvas.Right="5"
                            FontSize="14"
-                           Foreground="{Binding HostDelays.Value, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource HostDelayColorTextConv}}"
+                           Foreground="{Binding HostDelays.Value, Converter={StaticResource HostDelayColorTextConv}}"
                            Text="{Binding HostDelays.Value}" />
             </Canvas>
 

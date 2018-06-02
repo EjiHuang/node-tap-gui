@@ -135,6 +135,7 @@
     </Compile>
     <Compile Include="Converters\HostDelayColorTextConv.cs" />
     <Compile Include="Framwork\Command\CommonFunc.cs" />
+    <Compile Include="Framwork\Net\PingHelper.cs" />
     <Compile Include="WinFormComponent\NotifyIconComponent.cs">
       <SubType>Component</SubType>
     </Compile>

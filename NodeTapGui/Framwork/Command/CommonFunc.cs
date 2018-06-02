@@ -41,8 +41,8 @@ namespace NodeTapGui.Framwork.Command
             {
 #if DEBUG
                 Console.WriteLine(ex.Message);
-                return string.Empty;
 #endif
+                return string.Empty;
             }
         }
 

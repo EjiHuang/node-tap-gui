@@ -1,5 +1,6 @@
 using Command;
 using NodeTapGui.Controls;
+using NodeTapGui.Framwork.Net;
 using NotifyProperty;
 using System;
 using System.Collections.Generic;
@@ -39,6 +40,9 @@ namespace NodeTapGui
             DataContext = this;
             // 加载事件方法
             HandleEvents();
+
+            // 初始化Ping完成事件
+            _ping.PingCompleted += _ping_PingCompleted;
         }
 
         #endregion
@@ -157,6 +161,16 @@ namespace NodeTapGui
         /// </summary>
         public NotifyPropertyEx<string> HostDelays { get; } = string.Empty;
 
+        /// <summary>
+        ///     Ping Helper
+        /// </summary>
+        private PingHelper _ping = new PingHelper();
+
+        /// <summary>
+        ///     显示网络延迟的计时器
+        /// </summary>
+        private DispatcherTimer _timerGetHostDelays = new DispatcherTimer(DispatcherPriority.Background);
+
         #endregion
 
         #region method & event
@@ -178,7 +192,10 @@ namespace NodeTapGui
             Cmd = new CmdHelper(this);
 
             // 启动获取网络延迟定时器
-            GetHostDelays();
+            _timerGetHostDelays.Interval = TimeSpan.FromSeconds(1);
+            _timerGetHostDelays.Tag = "TIMER_GET_HOST_DELAYS";
+            _timerGetHostDelays.Tick += (s, args) => GetHostDelays();
+            _timerGetHostDelays.Start();
         }
 
         /// <summary>
@@ -434,16 +451,22 @@ namespace NodeTapGui
         /// </summary>
         public void GetHostDelays()
         {
-            var ping = new Ping();
-            var data = @"FXFXFXFXFXFXFXFXFXFXFXFXFFXFXFXFXFXFXFXFXFXFXFXFXF";
-            ping.PingCompleted += async (sender, args) =>
+            if (!_ping.Ping(Host.Value))
             {
-                HostDelays.Value = (args.Reply == null) ? "time out" : args.Reply.RoundtripTime.ToString() + " ms";
-                await Task.Delay(1000);
-                ping.SendAsync(Host.Value, data);
-            };
+                // 地址无效
+                HostDelays.Value = "invalid addr";
+            }
+        }
 
-            ping.SendAsync(Host.Value, data);
+        /// <summary>
+        ///     ping完成事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="p"></param>
+        /// <param name="parameters"></param>
+        private void _ping_PingCompleted(object sender, PingCompletedEventArgs e, params object[] parameters)
+        {
+            HostDelays.Value = (e.Reply == null) ? "time out" : e.Reply.RoundtripTime.ToString() + " ms";
         }
 
         /// <summary>

@@ -10,15 +10,15 @@ namespace NodeTapGui.Converters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var str = value.ToString();
-            if (!string.IsNullOrWhiteSpace(str) && str != "time out")
+            if (!string.IsNullOrWhiteSpace(str) && str != "time out" && str != "invalid addr")
             {
                 int o = int.Parse(str.Substring(0, str.IndexOf(" ms")));
                 if (0 < o && o <= 120)
-                    return "Green";
+                    return Brushes.Green;
                 else
-                    return "Red";
+                    return Brushes.Red;
             }
-            return "Red";
+            return Brushes.Red;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
