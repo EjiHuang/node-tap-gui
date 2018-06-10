@@ -50,7 +50,10 @@ namespace NodeTapGui
             // 将为空的项从集合中移除
             if (null != dg.SelectedItem && string.IsNullOrWhiteSpace((dg.SelectedItem as RoutesTabelModel)?.RouteIp))
             {
-                RoutesTableCollection.RemoveAt(dg.SelectedIndex);
+                if (dg.SelectedIndex < RoutesTableCollection.Count)
+                {
+                    RoutesTableCollection.RemoveAt(dg.SelectedIndex);
+                }
             }
         }
 

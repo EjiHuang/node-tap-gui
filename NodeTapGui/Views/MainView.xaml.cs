@@ -525,7 +525,7 @@ namespace NodeTapGui
             var dlg = new RoutesTableDialog(RoutesTableCollection);
             dlg.ShowDialog();
             // 编辑完毕后，写入路由表配置文件
-            File.WriteAllText(_routesPath, string.Empty);
+            File.WriteAllBytes(_routesPath, new byte[0]);
             using (StreamWriter writer = new StreamWriter(_routesPath, false))
             {
                 foreach (var item in RoutesTableCollection)
@@ -547,6 +547,8 @@ namespace NodeTapGui
             bool? ret = dlg.ShowDialog();
             if (ret == true)
             {
+                // 清空之前
+                RoutesTableCollection.Clear();
                 var list = await CommonFunc.ReadLineAsync(dlg.FileName);
                 list?.ForEach(o => { RoutesTableCollection.Add(new RoutesTabelModel { RouteIp = o }); });
                 if (RoutesTableCollection.Count == 0)
@@ -556,7 +558,7 @@ namespace NodeTapGui
                 else
                 {
                     // 新导入的路由表覆盖本地路由表配置文件
-                    File.WriteAllText(_routesPath, string.Empty);
+                    File.WriteAllBytes(_routesPath, new byte[0]);
                     using (StreamWriter writer = new StreamWriter(_routesPath, false))
                     {
                         foreach (var item in RoutesTableCollection)
