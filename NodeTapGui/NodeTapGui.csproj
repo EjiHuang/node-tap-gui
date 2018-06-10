@@ -137,6 +137,10 @@
     <Compile Include="Framwork\Common\CommonEx.cs" />
     <Compile Include="Framwork\Common\CommonFunc.cs" />
     <Compile Include="Framwork\Net\PingHelper.cs" />
+    <Compile Include="Models\RoutesTabelModel.cs" />
+    <Compile Include="Views\RoutesTableDialog.xaml.cs">
+      <DependentUpon>RoutesTableDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WinFormComponent\NotifyIconComponent.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -147,11 +151,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\RoutesTableDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Styles\Generic.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow.xaml">
+    <Page Include="Views\MainView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -162,8 +170,8 @@
     <Compile Include="Framwork\Common\CmdHelper.cs" />
     <Compile Include="Framwork\Common\PasswordBoxBindingHelper.cs" />
     <Compile Include="Framwork\NotifyProperty\NotifyPropertyEx.cs" />
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
+    <Compile Include="Views\MainView.xaml.cs">
+      <DependentUpon>MainView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -196,7 +204,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">

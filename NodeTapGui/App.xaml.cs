@@ -30,7 +30,7 @@ namespace NodeTapGui
             CheckAdministrator();
 
             // 构造主窗口并显示
-            MainWindow = new MainWindow();
+            MainWindow = new MainView();
             MainWindow.Show();
 
             // 配置NotifyIcon
@@ -38,7 +38,7 @@ namespace NodeTapGui
             MainWindow.StateChanged +=
                 (s, args) =>
                 {
-                    var win = s as MainWindow;
+                    var win = s as MainView;
                     if (win.WindowState == WindowState.Minimized)
                     {
                         win.ShowInTaskbar = false;

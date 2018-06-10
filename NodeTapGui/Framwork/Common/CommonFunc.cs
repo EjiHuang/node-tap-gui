@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 
 namespace Common
 {
@@ -41,6 +44,27 @@ namespace Common
 #endif
                 return string.Empty;
             }
+        }
+
+        /// <summary>
+        ///     读取文本文件行信息
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        public static async Task<List<string>> ReadLineAsync(string filePath)
+        {
+            var list = new List<string>();
+
+            using (var reader = new StreamReader(filePath))
+            {
+                string line;
+
+                while ((line = await reader.ReadLineAsync()) != null)
+                {
+                    list.Add(line);
+                }
+            }
+            return list;
         }
 
         #endregion

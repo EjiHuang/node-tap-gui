@@ -8,10 +8,10 @@ namespace Common
 {
 	public class CmdHelper
 	{
-		public MainWindow Main;
+		public MainView Main;
 		Process proc;
 
-		public CmdHelper(MainWindow main)
+		public CmdHelper(MainView main)
 		{
 			Main = main;
 		}
