@@ -8,7 +8,7 @@ Srar的node-tap的Gui版本<br/>
 然后将node-tap-gui程序集合（包括里面的*.dll和*.Config）放到您node-tap文件夹下  
 最后您就可以使用本软件了
 
-支持导入路由表配置文件，导入的路由表保存到根目录下的RoutesTable.txt文件中
+支持导入路由表配置文件，导入的路由表保存到根目录下的RoutesTable.txt文件中  
 用户可以通过edit table按钮修改路由表信息
 
 # 注意
