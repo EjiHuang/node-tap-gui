@@ -18,7 +18,7 @@ Srar的node-tap的Gui版本<br/>
 请到Releases频道获取最新版本（ https://github.com/JerryAJ/node-tap-gui/releases ）
 
 # 如何构建
-本程序为WPF应用程序，在Visual Studio 2017下构建完成，需要.net 4.5以上支持  
+本程序为WPF应用程序，在Visual Studio 2017下构建完成，需要.NET 4.5以上支持  
 
 # 感谢
 Srar的node-tap（ https://github.com/Srar/node-tap ）  
